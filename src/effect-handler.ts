@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, pipe } from "effect";
 import * as HttpServerResponse from "effect/unstable/http/HttpServerResponse";
 import * as HttpServerRequest from "effect/unstable/http/HttpServerRequest";
 import { UpdateItemCommand, $add } from "dynamodb-toolbox";
@@ -31,8 +31,9 @@ const handler = Effect.gen(function* () {
   return HttpServerResponse.text(`Count: ${count}`);
 });
 
-export const fetch = handler.pipe(
-  Effect.catchAll((error) =>
+export const fetch = pipe(
+  handler,
+  Effect.catchTag("CounterError", (error) =>
     Effect.succeed(
       HttpServerResponse.text(`Error: ${error.message}`, { status: 500 })
     )
