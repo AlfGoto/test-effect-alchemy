@@ -1,29 +1,8 @@
-import { Effect, Layer, Context } from "effect";
-import * as HttpServer from "effect/unstable/http/HttpServer";
+import { Effect } from "effect";
 import * as HttpServerResponse from "effect/unstable/http/HttpServerResponse";
 import * as HttpServerRequest from "effect/unstable/http/HttpServerRequest";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { Table, Entity, item, string, number } from "dynamodb-toolbox";
 import { UpdateItemCommand, $add } from "dynamodb-toolbox";
-
-const client = new DynamoDBClient({});
-const docClient = DynamoDBDocumentClient.from(client);
-
-const CounterTable = new Table({
-  documentClient: docClient,
-  name: process.env.COUNTER_TABLE_NAME!,
-  partitionKey: { name: "pk", type: "string" },
-});
-
-const CounterEntity = new Entity({
-  table: CounterTable,
-  name: "Counter",
-  schema: item({
-    pk: string().key(),
-    count: number().default(0),
-  }),
-});
+import { CounterEntity } from "./db";
 
 class CounterError extends Error {
   readonly _tag = "CounterError";
